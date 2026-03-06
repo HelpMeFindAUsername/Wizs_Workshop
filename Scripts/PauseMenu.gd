@@ -1,13 +1,18 @@
 extends CanvasLayer
 
-@onready var panel = $Panel
+@onready var panel = $Pause
+@onready var settings: Panel = $Settings
 
-@onready var res: Button = $Panel/Res
-@onready var settings: Button = $Panel/Settings
-@onready var btt: Button = $Panel/BTT
+@onready var res: Button = $Pause/Res
+@onready var settings_b: Button = $Pause/SettingsB
+@onready var btt: Button = $Pause/BTT
+
+@onready var back: Button = $Settings/back
 
 func _ready():
 	panel.visible = 0
+	settings.visible = 0
+	
 	process_mode = Node.PROCESS_MODE_ALWAYS
 	
 	
@@ -19,7 +24,8 @@ func _ready():
 		print("Boh ci sta")
 	
 	res.pressed.connect(resume)
-	settings.pressed.connect(sett)
+	settings_b.pressed.connect(toggleSett)
+	back.pressed.connect(toggleSett)
 	
 	
 func _unhandled_input(event):
@@ -34,6 +40,6 @@ func togglePause():
 func resume():
 	togglePause()
 	
-func sett():
-	global.settingsStatus = 1
-	get_tree().change_scene_to_file("res://Scenes/UI/setting.tscn")
+func toggleSett():
+	settings.visible = !settings.visible
+	panel.visible = !panel.visible

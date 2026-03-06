@@ -12,10 +12,3 @@ offset_right = 1152.0
 offset_bottom = 648.0
 text = "CLICK HERE TO BEGIN"
 autowrap_trim_flags = 0
-
-[node name="Settings" type="Button" parent="." unique_id=1033351645]
-offset_left = 1089.0
-offset_top = 13.0
-offset_right = 1134.0
-offset_bottom = 44.0
-text = "INPS"
