@@ -1,0 +1,42 @@
+[gd_scene format=3 uid="uid://b60pd3lnlxv45"]
+
+[ext_resource type="Script" uid="uid://scs5g5igce1g" path="res://Scripts/PauseMenu.gd" id="1_3t4vh"]
+[ext_resource type="PackedScene" uid="uid://bk83y5na5xugf" path="res://Scenes/UI/setting.tscn" id="2_hcn70"]
+
+[node name="PauseMenu" type="CanvasLayer" unique_id=718448338]
+script = ExtResource("1_3t4vh")
+
+[node name="Setting" parent="." unique_id=1074642589 instance=ExtResource("2_hcn70")]
+
+[node name="Panel" type="Panel" parent="." unique_id=803601945]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+size_flags_horizontal = 4
+size_flags_vertical = 4
+
+[node name="Res" type="Button" parent="Panel" unique_id=1211725284]
+layout_mode = 0
+offset_left = 447.0
+offset_top = 237.0
+offset_right = 705.0
+offset_bottom = 268.0
+text = "RESUME"
+
+[node name="Settings" type="Button" parent="Panel" unique_id=630939413]
+layout_mode = 0
+offset_left = 447.0
+offset_top = 295.0
+offset_right = 705.0
+offset_bottom = 326.0
+text = "SETTINGS"
+
+[node name="BTT" type="Button" parent="Panel" unique_id=213589820]
+layout_mode = 0
+offset_left = 447.0
+offset_top = 456.0
+offset_right = 705.0
+offset_bottom = 487.0
+text = "BACK TO TITLE SCREEN"

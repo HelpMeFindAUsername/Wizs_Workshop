@@ -1,0 +1,8 @@
+[gd_scene format=3 uid="uid://b0lp6kl2751py"]
+
+[ext_resource type="Script" uid="uid://doc3x3urv3du6" path="res://Scripts/Gesture_Recognition/gesture_recognition.gd" id="1_jy3gt"]
+
+[node name="Gesture_Recognition" type="Node2D" unique_id=1396713249]
+script = ExtResource("1_jy3gt")
+
+[node name="Lines" type="Line2D" parent="." unique_id=299830772]
