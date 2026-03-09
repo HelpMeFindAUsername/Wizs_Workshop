@@ -2,9 +2,15 @@
 
 [ext_resource type="PackedScene" uid="uid://b0lp6kl2751py" path="res://Scenes/Gesture_Recognition/gesture_recognition.tscn" id="1_ebmjs"]
 [ext_resource type="PackedScene" uid="uid://b60pd3lnlxv45" path="res://Scenes/UI/Pause.tscn" id="2_wrm1d"]
+[ext_resource type="Texture2D" uid="uid://ci3d84pgfrq5a" path="res://Assets/shono_risharshato.png" id="3_wrm1d"]
 
 [node name="Game" type="Node2D" unique_id=966391539]
 
 [node name="PauseMenu" parent="." unique_id=718448338 instance=ExtResource("2_wrm1d")]
 
 [node name="Gesture_Recognition" parent="." unique_id=1396713249 instance=ExtResource("1_ebmjs")]
+
+[node name="ShonoRisharshato" type="Sprite2D" parent="." unique_id=1435238565]
+position = Vector2(245382.48, -139534.52)
+scale = Vector2(980.46387, 657.6925)
+texture = ExtResource("3_wrm1d")

@@ -1,6 +1,7 @@
 [gd_scene format=3 uid="uid://b60pd3lnlxv45"]
 
 [ext_resource type="Script" uid="uid://scs5g5igce1g" path="res://Scripts/PauseMenu.gd" id="1_3t4vh"]
+[ext_resource type="Texture2D" uid="uid://ci3d84pgfrq5a" path="res://Assets/shono_risharshato.png" id="2_hcn70"]
 
 [node name="PauseMenu" type="CanvasLayer" unique_id=718448338]
 script = ExtResource("1_3t4vh")
@@ -16,26 +17,26 @@ size_flags_vertical = 4
 
 [node name="Res" type="Button" parent="Pause" unique_id=1211725284]
 layout_mode = 0
-offset_left = 447.0
-offset_top = 237.0
-offset_right = 705.0
-offset_bottom = 268.0
+offset_left = 11.0
+offset_top = 273.0
+offset_right = 269.0
+offset_bottom = 304.0
 text = "RESUME"
 
 [node name="SettingsB" type="Button" parent="Pause" unique_id=630939413]
 layout_mode = 0
-offset_left = 447.0
-offset_top = 295.0
-offset_right = 705.0
-offset_bottom = 326.0
+offset_left = 11.0
+offset_top = 332.0
+offset_right = 269.0
+offset_bottom = 363.0
 text = "SETTINGS"
 
 [node name="BTT" type="Button" parent="Pause" unique_id=213589820]
 layout_mode = 0
-offset_left = 447.0
-offset_top = 456.0
-offset_right = 705.0
-offset_bottom = 487.0
+offset_left = 21.0
+offset_top = 563.0
+offset_right = 279.0
+offset_bottom = 594.0
 text = "BACK TO TITLE SCREEN"
 
 [node name="Settings" type="Panel" parent="." unique_id=1815762392]
@@ -94,3 +95,8 @@ offset_top = 438.0
 offset_right = 367.0
 offset_bottom = 469.0
 text = "GO BACK"
+
+[node name="ShonoRisharshato" type="Sprite2D" parent="." unique_id=1203369222]
+position = Vector2(801, 324)
+scale = Vector2(1.4096386, 1.5211267)
+texture = ExtResource("2_hcn70")
