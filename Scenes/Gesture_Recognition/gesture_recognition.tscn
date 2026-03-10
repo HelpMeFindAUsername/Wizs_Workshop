@@ -4,5 +4,7 @@
 
 [node name="Gesture_Recognition" type="Node2D" unique_id=1396713249]
 script = ExtResource("1_jy3gt")
+record = true
+file_name = "Ball"
 
 [node name="Lines" type="Line2D" parent="." unique_id=299830772]

@@ -12,6 +12,13 @@ var lines_drawn := []
 @export var control_points_num := 32
 var total_control_points := []
 
+@export var record := false #Can you record new shapes?
+@export var save_keycode := KEY_SHIFT
+@export var shapes_folder_path := "res://Gestures/"
+@export var file_name := "New_Shape"
+var loaded_shapes := []
+@export var sort_key = "x"
+
 #DEBUG FUNCTION TO CHECK IF CONTROL POINTS GET REGISTERED
 #--------------------------------------------------------------------------
 @export var show_control_points := true
@@ -25,6 +32,19 @@ func _draw():
 func set_points():
 	queue_redraw()
 #--------------------------------------------------------------------------
+
+func _unhandled_input(event):
+	if event is InputEventKey and event.pressed:
+		
+		#Save shapes
+		if event.keycode == save_keycode:
+			if total_control_points.size() > 0:
+				var sorted_points = sort_points(total_control_points.duplicate(), sort_key)
+				save_control_points_to_resource(sorted_points)
+				print("Saved CP (control points, chill)")
+			
+			else:
+				print("il bro non ha faige da salvare, L bozo + stay mad")
 
 func _input(event):
 	#Check for mouse lmb input (true or false)
@@ -157,3 +177,69 @@ func find_center(points: Array) -> Vector2:
 		max_y = max(max_y, point.y)
 	
 	return Vector2((min_x + max_x) * 0.5, (min_y + max_y) * 0.5)
+
+func sort_points(points: Array, by: String = "x") -> Array:
+	#Sort points either by x or y coords
+	match by:
+		"x":
+			points.sort_custom(func(a, b): return a.x < b.x or (a.x == b.x and a.y < b.y))
+		
+		"y":
+			points.sort_custom(func(a, b): return a.y < b.y or (a.y == b.y and a.x < b.x))
+	
+	return points
+
+func save_control_points_to_resource(points : Array):
+	if record:
+		var resource = ControlPointsData.new()
+		resource.set_points(points)
+		
+		#Make sure the resource folder exist
+		if not DirAccess.dir_exists_absolute(shapes_folder_path):
+			var make_result = DirAccess.make_dir_recursive_absolute(shapes_folder_path)
+			if make_result != OK:
+				print ("failed to create directory for saving gestures, what's left to do is killing yourself... I'm sorry")
+				return
+		
+		var save_path = shapes_folder_path + "/" + file_name + ".tres"
+		var unique_save_path = save_path
+		var count =1
+		
+		#This makes sure that every time that a new shape is added it doesn't overwrite one with the same name
+		while FileAccess.file_exists(unique_save_path):
+			unique_save_path = shapes_folder_path + "/" + file_name + "_" + str(count) + ".tres"
+			count += 1
+		
+		var result = ResourceSaver.save(resource, unique_save_path)
+		if result == OK:
+			print("Control points saved to:" + unique_save_path)
+		else:
+			print("Fam sum went wrong, damn son :sob:")
+
+func preprocess_points(points: Array) -> Array:
+	points = segmentation(points, control_points_num)
+	points = sort_points(points, sort_key)
+	return points
+
+#func recognize_shape(input_points: Array):
+	##if no shapes return nothing duh
+	#if loaded_shapes.is_empty():
+		#print("no shapes to compare")
+		#return ""
+	#
+	#var best_shape = INF
+	#
+	#var input = preprocess_points(input_points)
+	#
+	##for each shape take data
+	#for name in loaded_shapes.keys():
+		#var saved_data = loaded_shapes[name]
+		#var required_lines = saved_data.get("min_lines", 1)
+		#
+		#if lines_drawn.size() < required_lines:
+			#print("Shape '%s' skipped: only %d lines drawn, requires %d") %[name, lines_drawn.size(), required_lines] #The % is used to refer to array variables that follow the print
+			#continue
+		#
+		#If the number of lines drawn is enough
+		#var saved = preprocess_points(saved_data.points)
+		#var dist = path_distance(input, saved)
