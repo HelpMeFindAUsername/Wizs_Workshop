@@ -22,7 +22,7 @@ config/icon="res://icon.svg"
 
 [autoload]
 
-global="*uid://dmom6ynukklqq"
+Global="*uid://dmom6ynukklqq"
 
 [display]
 

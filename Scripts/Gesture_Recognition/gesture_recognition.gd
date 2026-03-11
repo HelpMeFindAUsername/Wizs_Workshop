@@ -16,12 +16,16 @@ var total_control_points := []
 @export var save_keycode := KEY_SHIFT
 @export var shapes_folder_path := "res://Gestures/"
 @export var file_name := "New_Shape"
-var loaded_shapes := []
+var loaded_shapes := {}
 @export var sort_key = "x"
+@export var recognition_threshold := 0.085 #Higher = more forgiving
 
 #DEBUG FUNCTION TO CHECK IF CONTROL POINTS GET REGISTERED
 #--------------------------------------------------------------------------
 @export var show_control_points := true
+
+func _ready():
+	load_shapes()
 
 func _draw():
 	if show_control_points:
@@ -61,12 +65,12 @@ func _input(event):
 				print ("Total amount of lines drawn: " + (str(lines_drawn.size())))
 				update_control_points()
 				set_points()
+				recognize_shape(total_control_points)
 	
 	elif event is InputEventMouseMotion and lmb_pressed and current_line:
 		var new_point = get_local_mouse_position()
 		if current_line.points.size() == 0 or current_line.points[-1].distance_to(new_point) >= MIN_DISTANCE_BETWEEN_POINTS:
 			current_line.add_point(new_point)
-			
 		
 
 func start_new_line():
@@ -120,7 +124,7 @@ func update_control_points():
 		for i in range(extra_needed):
 			var angle = (TAU / extra_needed) * i
 			var offset = Vector2(cos(angle), sin(angle)) * radius
-			total_control_points.append(center_point * offset)
+			total_control_points.append(center_point + offset)
 	print("Total amount of control points: " + (str(total_control_points.size())))
 
 func segmentation (points: Array, count: int) -> Array:
@@ -152,17 +156,44 @@ func segmentation (points: Array, count: int) -> Array:
 		if current_segment >= segment_lengths.size():
 			break
 		
+		#Actual segmentation
 		var seg_start = points[current_segment]
 		var seg_end = points[current_segment + 1]
 		var seg_length = segment_lengths[current_segment]
 		var remaining = target_distance - distance_accum
 		var t = remaining / seg_length
 		
+		#Add new point to the line
 		var new_point = seg_start.lerp(seg_end, t)
 		result.append(new_point)
 	
 	result.append(points[-1])
 	return result
+
+func load_shapes():
+	#Guess what this does
+	var dir = DirAccess.open(shapes_folder_path)
+	if dir:
+		dir.list_dir_begin()
+		
+		#Load each shape
+		var next_file = dir.get_next()
+		while next_file != "":
+			if next_file.ends_with(".tres"):
+				var full_path = shapes_folder_path + "/" + next_file #Get the full path to the file
+				var res = load(full_path) #then load as a resource
+				if res and res is ControlPointsData:
+					name = (next_file.get_basename()).to_upper()
+					loaded_shapes[name] = {"points": res.points, "min_lines": res.min_lines_required} #The every data thingy
+					
+					print("Loaded shape: ", name, ", Min lines required: ", res.min_lines_required)
+			
+			next_file = dir.get_next()
+			
+	
+	#Just in case
+	else:
+		print("Failed to open saved shapes, L bozo")
 
 #MINMAX THIS BITCH!!!uhidshflveashblkirugfjaloieuwsrfp
 func find_center(points: Array) -> Vector2:
@@ -221,25 +252,99 @@ func preprocess_points(points: Array) -> Array:
 	points = sort_points(points, sort_key)
 	return points
 
-#func recognize_shape(input_points: Array):
-	##if no shapes return nothing duh
-	#if loaded_shapes.is_empty():
-		#print("no shapes to compare")
-		#return ""
-	#
-	#var best_shape = INF
-	#
-	#var input = preprocess_points(input_points)
-	#
-	##for each shape take data
-	#for name in loaded_shapes.keys():
-		#var saved_data = loaded_shapes[name]
-		#var required_lines = saved_data.get("min_lines", 1)
-		#
-		#if lines_drawn.size() < required_lines:
-			#print("Shape '%s' skipped: only %d lines drawn, requires %d") %[name, lines_drawn.size(), required_lines] #The % is used to refer to array variables that follow the print
-			#continue
-		#
+func path_distance(points1: Array, points2: Array) -> float:
+	
+	#Get total distance from point 1 to 2
+	var total_dist_1to2 := 0.0
+	for p1 in points1:
+		var min_dist := INF
+		for p2 in points2:
+			var dist = p1.distance_to(p2)
+			if dist < min_dist:
+				min_dist = dist
+			
+		total_dist_1to2 += min_dist
+	
+	#Get total distance from point 2 to 1
+	
+	var total_dist_2to1 := 0.0
+	for p2 in points2:
+		var min_dist := INF
+		for p1 in points1:
+			var dist = p2.distance_to(p1)
+			if dist < min_dist:
+				min_dist = dist
+			
+		total_dist_2to1 += min_dist
+	
+	#Average distance between points
+	var avg_dist = (total_dist_1to2 + total_dist_2to1) / (points1.size() + points2.size())
+	
+	#Scale invariance so that no matter the size it gets recognized
+	var bounds = calculate_bounds(points1)
+	var gesture_size = max(bounds.size.x, bounds.size.y, 1.0)
+	
+	return avg_dist / gesture_size
+
+func calculate_bounds(points: Array) -> Rect2:
+	var min_x = INF
+	var max_x = -INF
+	var min_y = INF
+	var max_y = -INF
+	for p in points:
+		min_x = min(min_x, p.x)
+		max_x = max(max_x, p.x)
+		min_y = min(min_y, p.y)
+		max_y = max(max_y, p.y)
+	
+	return Rect2(Vector2(min_x, min_y), Vector2(max_x - min_x, max_y - min_y))
+
+func recognize_shape(input_points: Array):
+	#if no shapes return nothing duh
+	if loaded_shapes.is_empty():
+		print("no shapes to compare")
+		return ""
+	
+	var best_distance = INF
+	
+	var input = preprocess_points(input_points)
+	
+	#For each shape take data
+	for name in loaded_shapes.keys():
+		var saved_data = loaded_shapes[name]
+		var required_lines = saved_data.get("min_lines", 1)
+		
+		#If there's not enough lines drawn
+		if lines_drawn.size() < required_lines:
+			print("Shape '%s' skipped: only %d lines drawn, requires %d" %[name, lines_drawn.size(), required_lines]) #The % is used to refer to array variables that follow the print
+			continue
+		
 		#If the number of lines drawn is enough
-		#var saved = preprocess_points(saved_data.points)
-		#var dist = path_distance(input, saved)
+		var saved = preprocess_points(saved_data.points)
+		var dist = path_distance(input, saved)
+		if dist < best_distance:
+			best_distance = snapped(dist, 0.001)
+			
+			#Get rid of unnecessary suffix
+			
+			name = name.replace("_", "")
+			name = name.replace("0", "")
+			name = name.replace("1", "")
+			name = name.replace("2", "")
+			name = name.replace("3", "")
+			name = name.replace("4", "")
+			name = name.replace("5", "")
+			name = name.replace("6", "")
+			name = name.replace("7", "")
+			name = name.replace("8", "")
+			name = name.replace("9", "")
+			
+			Global.best_match = name
+	
+	print("Best match:", Global.best_match, ", Distance:", best_distance)
+	
+	#If the distance is greater than the threshold then it doesn't match
+	if best_distance > recognition_threshold:
+		Global.best_match = "No match"
+		
+		print("Drawing too weird, no match for you loser!")
