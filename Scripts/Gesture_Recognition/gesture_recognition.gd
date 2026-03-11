@@ -26,6 +26,9 @@ var loaded_shapes := {}
 
 func _ready():
 	load_shapes()
+	
+	if not record:
+		print("Not recording")
 
 func _draw():
 	if show_control_points:
@@ -54,7 +57,7 @@ func _input(event):
 	#Check for mouse lmb input (true or false)
 	if (event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT):
 		lmb_pressed = event.pressed
-		print (str(lmb_pressed))
+		#print(str(lmb_pressed))
 		
 		#If true start a new line else append line to the total amount of lines
 		if lmb_pressed:
@@ -81,7 +84,7 @@ func start_new_line():
 	
 	lines.add_child(current_line)
 	
-	print("NEW LINE ADDED")
+	#print("NEW LINE ADDED")
 
 func update_control_points():
 	
@@ -105,7 +108,7 @@ func update_control_points():
 		
 		#I don't know what the fuck is going on here, it was late and I was disgustingly tired fuck this
 		if middle_points.size() > num_middle_points:
-			var step = float((middle_points.size() - 1) / (num_middle_points - 1))
+			var step = float((middle_points.size() - 1) / max(num_middle_points - 1))
 			for i in range(num_middle_points):
 				var idx = int(round(i*step))
 				idx = clamp(idx, 0, middle_points.size() -1)
@@ -183,10 +186,10 @@ func load_shapes():
 				var full_path = shapes_folder_path + "/" + next_file #Get the full path to the file
 				var res = load(full_path) #then load as a resource
 				if res and res is ControlPointsData:
-					name = (next_file.get_basename()).to_upper()
-					loaded_shapes[name] = {"points": res.points, "min_lines": res.min_lines_required} #The every data thingy
+					var shape_name = next_file.get_basename().to_upper()
+					loaded_shapes[shape_name] = {"points": res.points, "min_lines": res.min_lines_required} #The every data thingy
 					
-					print("Loaded shape: ", name, ", Min lines required: ", res.min_lines_required)
+					print("Loaded shape: ", shape_name, ", Min lines required: ", res.min_lines_required)
 			
 			next_file = dir.get_next()
 			
@@ -249,7 +252,7 @@ func save_control_points_to_resource(points : Array):
 
 func preprocess_points(points: Array) -> Array:
 	points = segmentation(points, control_points_num)
-	points = sort_points(points, sort_key)
+	points = normalize_points(points)
 	return points
 
 func path_distance(points1: Array, points2: Array) -> float:
@@ -266,7 +269,6 @@ func path_distance(points1: Array, points2: Array) -> float:
 		total_dist_1to2 += min_dist
 	
 	#Get total distance from point 2 to 1
-	
 	var total_dist_2to1 := 0.0
 	for p2 in points2:
 		var min_dist := INF
@@ -298,6 +300,21 @@ func calculate_bounds(points: Array) -> Rect2:
 		max_y = max(max_y, p.y)
 	
 	return Rect2(Vector2(min_x, min_y), Vector2(max_x - min_x, max_y - min_y))
+
+func normalize_points(points:Array) -> Array:
+	#Makes sure the gestures are centered
+	var bounds = calculate_bounds(points)
+	var center = bounds.position + bounds.size * 0.5
+	var scale = max(bounds.size.x, bounds.size.y)
+	
+	if scale == 0:
+		scale = 1.0
+	
+	var result = []
+	for p in points:
+		result.append((p - center) / scale)
+	
+	return result
 
 func recognize_shape(input_points: Array):
 	#if no shapes return nothing duh
