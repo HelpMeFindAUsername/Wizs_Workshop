@@ -2,7 +2,7 @@ extends Node2D
 
 @onready var lines = $Lines
 
-const  MIN_DISTANCE_BETWEEN_POINTS = 5.0 #Minimum distance to create a new point for the line to draw
+const  MIN_DISTANCE_BETWEEN_POINTS = 6.0 #Minimum distance to create a new point for the line to draw
 
 var lmb_pressed : bool
 
@@ -54,27 +54,42 @@ func _unhandled_input(event):
 				print("il bro non ha faige da salvare, L bozo + stay mad")
 
 func _input(event):
-	#Check for mouse lmb input (true or false)
-	if (event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT):
-		lmb_pressed = event.pressed
-		#print(str(lmb_pressed))
-		
-		#If true start a new line else append line to the total amount of lines
-		if lmb_pressed:
-			start_new_line()
-		else:
-			if current_line and current_line.points.size() > 1:
-				lines_drawn.append(current_line.points)
-				print ("Total amount of lines drawn: " + (str(lines_drawn.size())))
-				update_control_points()
-				set_points()
-				recognize_shape(total_control_points)
 	
-	elif event is InputEventMouseMotion and lmb_pressed and current_line:
-		var new_point = get_local_mouse_position()
-		if current_line.points.size() == 0 or current_line.points[-1].distance_to(new_point) >= MIN_DISTANCE_BETWEEN_POINTS:
-			current_line.add_point(new_point)
-		
+	#This makes sure that when 2 or more fingers are used it breaks the line
+	if event is InputEventScreenTouch and event.index != 0:
+		return
+	
+	#Mouse controls
+	if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT:
+		lmb_pressed = event.pressed
+		handle_press(lmb_pressed)
+	
+	elif event is InputEventMouseMotion and lmb_pressed:
+		add_point(get_local_mouse_position())
+	
+	#Touch controls
+	elif event is InputEventScreenTouch:
+		lmb_pressed = event.pressed
+		handle_press(lmb_pressed)
+	
+	elif event is InputEventScreenDrag and lmb_pressed:
+		add_point(to_local(event.position))
+
+func handle_press(pressed):
+	#What happens when is pressed
+	if pressed:
+		start_new_line()
+	else:
+		if current_line and current_line.points.size() > 1:
+			lines_drawn.append(current_line.points)
+			update_control_points()
+			set_points()
+			recognize_shape(total_control_points)
+
+func add_point(pos: Vector2):
+	#Adds points to the current line
+	if current_line.points.size() == 0 or current_line.points[-1].distance_to(pos) >= MIN_DISTANCE_BETWEEN_POINTS:
+		current_line.add_point(pos)
 
 func start_new_line():
 	current_line = Line2D.new()
@@ -108,7 +123,7 @@ func update_control_points():
 		
 		#I don't know what the fuck is going on here, it was late and I was disgustingly tired fuck this
 		if middle_points.size() > num_middle_points:
-			var step = float((middle_points.size() - 1) / max(num_middle_points - 1))
+			var step = float((middle_points.size() - 1) / max(num_middle_points - 1, 1))
 			for i in range(num_middle_points):
 				var idx = int(round(i*step))
 				idx = clamp(idx, 0, middle_points.size() -1)
