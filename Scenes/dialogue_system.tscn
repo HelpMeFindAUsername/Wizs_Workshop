@@ -1,0 +1,85 @@
+[gd_scene format=3 uid="uid://cgsu3v8uek4ym"]
+
+[ext_resource type="Script" uid="uid://du6rrf8kbstcr" path="res://Scripts/Dialogue_Box/dialogue_system.gd" id="1_r12a2"]
+[ext_resource type="FontFile" uid="uid://c6o4ky2ypismv" path="res://Fonts/Junction/Junction-regular.otf" id="2_7ywy7"]
+[ext_resource type="Texture2D" uid="uid://cjhxvkyn0l524" path="res://Assets/Dialogue_Box/Dialogue_Box.png" id="2_gvs7d"]
+[ext_resource type="FontFile" uid="uid://bgrrvyqfxinas" path="res://Fonts/Junction/Junction-bold.otf" id="3_gvs7d"]
+
+[sub_resource type="GDScript" id="GDScript_hsisa"]
+script/source = "extends Control
+
+
+func _process(_delta):
+	if Global.is_talking:
+		mouse_filter = MOUSE_FILTER_STOP
+	else:
+		mouse_filter = MOUSE_FILTER_IGNORE
+"
+
+[node name="DialogueSystem" type="CanvasLayer"]
+script = ExtResource("1_r12a2")
+
+[node name="DialogueBox" type="Sprite2D" parent="."]
+position = Vector2(140, 416)
+scale = Vector2(0.7, 0.7)
+texture = ExtResource("2_gvs7d")
+centered = false
+
+[node name="NinePatchRect" type="NinePatchRect" parent="."]
+offset_right = 40.0
+offset_bottom = 40.0
+
+[node name="SpeakerLabel" type="RichTextLabel" parent="NinePatchRect"]
+layout_mode = 0
+offset_left = 87.0
+offset_top = 429.0
+offset_right = 367.0
+offset_bottom = 514.0
+scale = Vector2(0.7, 0.7)
+theme_override_colors/default_color = Color(0.446777, 0.446777, 0.446777, 1)
+theme_override_fonts/normal_font = ExtResource("2_7ywy7")
+theme_override_font_sizes/bold_italics_font_size = 30
+theme_override_font_sizes/italics_font_size = 30
+theme_override_font_sizes/mono_font_size = 30
+theme_override_font_sizes/normal_font_size = 30
+theme_override_font_sizes/bold_font_size = 30
+bbcode_enabled = true
+text = "name
+"
+scroll_active = false
+
+[node name="DialogueLabel" type="RichTextLabel" parent="NinePatchRect"]
+clip_contents = false
+layout_mode = 0
+offset_left = 166.0
+offset_top = 485.0
+offset_right = 1311.0
+offset_bottom = 745.0
+scale = Vector2(0.7, 0.7)
+theme_override_fonts/normal_font = ExtResource("2_7ywy7")
+theme_override_fonts/bold_italics_font = ExtResource("3_gvs7d")
+theme_override_font_sizes/bold_italics_font_size = 40
+theme_override_font_sizes/italics_font_size = 40
+theme_override_font_sizes/mono_font_size = 40
+theme_override_font_sizes/normal_font_size = 40
+theme_override_font_sizes/bold_font_size = 40
+bbcode_enabled = true
+text = "text"
+scroll_active = false
+scroll_following = true
+
+[node name="Timer" type="Timer" parent="."]
+wait_time = 0.2
+one_shot = true
+
+[node name="Input_Block" type="Control" parent="."]
+visible = false
+layout_mode = 3
+anchors_preset = 0
+offset_left = -120.0
+offset_top = -96.0
+offset_right = 1268.0
+offset_bottom = 739.0
+script = SubResource("GDScript_hsisa")
+
+[connection signal="timeout" from="Timer" to="." method="_on_timer_timeout"]
