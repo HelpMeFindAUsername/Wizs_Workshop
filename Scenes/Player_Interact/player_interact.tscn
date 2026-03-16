@@ -1,0 +1,14 @@
+[gd_scene format=3 uid="uid://bs1a5bxslx6dq"]
+
+[ext_resource type="PackedScene" uid="uid://bsctls8rangfd" path="res://Scenes/Gesture_Recognition/gesture_recognition.tscn" id="1_wdoc3"]
+[ext_resource type="Script" uid="uid://rvmg3p2mno3r" path="res://Scripts/Player_Interact/batch.gd" id="2_gaq52"]
+
+[node name="Player_Interact" type="Node2D" unique_id=1067726155]
+
+[node name="Gesture_Recognition" parent="." unique_id=1396713249 instance=ExtResource("1_wdoc3")]
+file_name = "Fire"
+min_lines = 3
+type = 1
+
+[node name="Batch" type="Node" parent="." unique_id=2023136124]
+script = ExtResource("2_gaq52")

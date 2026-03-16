@@ -16,6 +16,11 @@ var total_control_points := []
 @export var save_keycode := KEY_SHIFT
 @export var shapes_folder_path := "res://Gestures/"
 @export var file_name := "New_Shape"
+@export var min_lines := 1
+@export var type : GestureType
+
+enum GestureType {BASE, QUALITY}
+
 var loaded_shapes := {}
 @export var sort_key = "x"
 @export var recognition_threshold := 0.085 #Higher = more forgiving
@@ -187,9 +192,9 @@ func load_shapes():
 				var res = load(full_path) #then load as a resource
 				if res and res is ControlPointsData:
 					var shape_name = next_file.get_basename().to_upper()
-					loaded_shapes[shape_name] = {"points": res.points, "min_lines": res.min_lines_required} #The every data thingy
+					loaded_shapes[shape_name] = {"points": res.points, "min_lines": res.min_lines_required, "gesture_type": res.gesture_type} #The every data thingy
 					
-					print("Loaded shape: ", shape_name, ", Min lines required: ", res.min_lines_required)
+					print("Loaded shape: ", shape_name, ", Min lines required: ", res.min_lines_required, ", Gesture type: ", res.gesture_type)
 			
 			next_file = dir.get_next()
 			
@@ -227,6 +232,8 @@ func save_control_points_to_resource(points : Array):
 	if record:
 		var resource = ControlPointsData.new()
 		resource.set_points(points)
+		resource.set_min_lines(min_lines)
+		resource.set_type(type)
 		
 		#Make sure the resource folder exist
 		if not DirAccess.dir_exists_absolute(shapes_folder_path):
@@ -321,7 +328,7 @@ func normalize_points(points:Array) -> Array:
 func recognize_shape(input_points: Array):
 	#if no shapes return nothing duh
 	if loaded_shapes.is_empty():
-		print("no shapes to compare")
+		print("No shapes to compare")
 		return ""
 	
 	var best_distance = INF
@@ -332,6 +339,7 @@ func recognize_shape(input_points: Array):
 	for name in loaded_shapes.keys():
 		var saved_data = loaded_shapes[name]
 		var required_lines = saved_data.get("min_lines", 1)
+		var gesture_type = saved_data.get("gesture_type")
 		
 		#If there's not enough lines drawn
 		if lines_drawn.size() < required_lines:
@@ -358,7 +366,8 @@ func recognize_shape(input_points: Array):
 			name = name.replace("8", "")
 			name = name.replace("9", "")
 			
-			Global.best_match = name
+			#Recognize shape only if batch allows it
+			batch_check(gesture_type, name)
 	
 	print("Best match:", Global.best_match, ", Distance:", best_distance)
 	
@@ -366,4 +375,20 @@ func recognize_shape(input_points: Array):
 	if best_distance > recognition_threshold:
 		Global.best_match = "No match"
 		
-		print("Drawing too weird, no match for you loser!")
+		#print("Drawing too weird, no match for you loser!")
+
+func batch_check(gesture_type, name):
+	var type = gesture_type
+	if Global.current_batch == 0:
+		if type == 0:
+			Global.best_match = name
+			
+		else:
+			print ("Wrong type, should be base")
+	
+	if Global.current_batch == 1:
+		if type == 1:
+			Global.best_match = name
+			
+		else:
+			print ("Wrong type, should be quality")
