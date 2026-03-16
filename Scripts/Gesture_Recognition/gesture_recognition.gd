@@ -9,7 +9,7 @@ var lmb_pressed : bool
 var current_line : Line2D
 var lines_drawn := []
 
-@export var control_points_num := 32
+@export var control_points_num := 24
 var total_control_points := []
 
 @export var record := false #Can you record new shapes?
@@ -251,6 +251,8 @@ func save_control_points_to_resource(points : Array):
 			print("Fam sum went wrong, damn son :sob:")
 
 func preprocess_points(points: Array) -> Array:
+	#First sort, then sgment, last normalize
+	points = sort_points(points, sort_key)
 	points = segmentation(points, control_points_num)
 	points = normalize_points(points)
 	return points
