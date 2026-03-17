@@ -25,6 +25,8 @@ var loaded_shapes := {}
 @export var sort_key = "x"
 @export var recognition_threshold := 0.085 #Higher = more forgiving
 
+var found_type : int #Found type in gesture
+
 #DEBUG FUNCTION TO CHECK IF CONTROL POINTS GET REGISTERED
 #--------------------------------------------------------------------------
 @export var show_control_points := true
@@ -53,7 +55,7 @@ func _unhandled_input(event):
 			if total_control_points.size() > 0:
 				var sorted_points = sort_points(total_control_points.duplicate(), sort_key)
 				save_control_points_to_resource(sorted_points)
-				print("Saved CP (control points, chill)")
+				print("Saved control points to resource)")
 			
 			else:
 				print("il bro non ha faige da salvare, L bozo + stay mad")
@@ -71,15 +73,32 @@ func _input(event):
 		else:
 			if current_line and current_line.points.size() > 1:
 				lines_drawn.append(current_line.points)
-				print ("Total amount of lines drawn: " + (str(lines_drawn.size())))
+				#print ("Total amount of lines drawn: " + (str(lines_drawn.size())))
 				update_control_points()
 				set_points()
 				recognize_shape(total_control_points)
+	
 	
 	elif event is InputEventMouseMotion and lmb_pressed and current_line:
 		var new_point = get_local_mouse_position()
 		if current_line.points.size() == 0 or current_line.points[-1].distance_to(new_point) >= MIN_DISTANCE_BETWEEN_POINTS:
 			current_line.add_point(new_point)
+				#Batch check
+	
+	#REPLACE WITH A CONFIRM OPTION AFTER DRAWING
+	#-----------------------------------------------
+	if Input.is_action_just_pressed("Confirm"):
+	#-----------------------------------------------
+	#Goes to next batch only if recognized type matches what's needed
+		if Global.current_batch == 0 and found_type == 0:
+			Global.base = Global.best_match
+			Global.current_batch += 1
+		
+		if Global.current_batch == 1 and found_type == 1:
+			Global.qual1 = Global.best_match
+			Global.current_batch += 1
+		
+		print("Current batch: ", str(Global.current_batch))
 
 func start_new_line():
 	current_line = Line2D.new()
@@ -133,7 +152,7 @@ func update_control_points():
 			var angle = (TAU / extra_needed) * i
 			var offset = Vector2(cos(angle), sin(angle)) * radius
 			total_control_points.append(center_point + offset)
-	print("Total amount of control points: " + (str(total_control_points.size())))
+	#print("Total amount of control points: " + (str(total_control_points.size())))
 
 func segmentation (points: Array, count: int) -> Array:
 	#THIS FUNCTION IS USED TO DIVIDE THE LINES INTO SEGMENTS WHICH GET USED TO CREATE CONTROL POINTS I WANT TO KILL MYSELF
@@ -239,7 +258,7 @@ func save_control_points_to_resource(points : Array):
 		if not DirAccess.dir_exists_absolute(shapes_folder_path):
 			var make_result = DirAccess.make_dir_recursive_absolute(shapes_folder_path)
 			if make_result != OK:
-				print ("failed to create directory for saving gestures, what's left to do is killing yourself... I'm sorry")
+				print ("failed to create directory for saving gestures")
 				return
 		
 		var save_path = shapes_folder_path + "/" + file_name + ".tres"
@@ -343,7 +362,7 @@ func recognize_shape(input_points: Array):
 		
 		#If there's not enough lines drawn
 		if lines_drawn.size() < required_lines:
-			print("Shape '%s' skipped: only %d lines drawn, requires %d" %[name, lines_drawn.size(), required_lines]) #The % is used to refer to array variables that follow the print
+			#print("Shape '%s' skipped: only %d lines drawn, requires %d" %[name, lines_drawn.size(), required_lines]) #The % is used to refer to array variables that follow the print
 			continue
 		
 		#If the number of lines drawn is enough
@@ -366,29 +385,12 @@ func recognize_shape(input_points: Array):
 			name = name.replace("8", "")
 			name = name.replace("9", "")
 			
-			#Recognize shape only if batch allows it
-			batch_check(gesture_type, name)
-	
-	print("Best match:", Global.best_match, ", Distance:", best_distance)
-	
-	#If the distance is greater than the threshold then it doesn't match
-	if best_distance > recognition_threshold:
-		Global.best_match = "No match"
+			#Recognize shape
+			Global.best_match = name
+			print("Best match is:", Global.best_match, ", Distance:", best_distance)
+			found_type = gesture_type
 		
-		#print("Drawing too weird, no match for you loser!")
-
-func batch_check(gesture_type, name):
-	var type = gesture_type
-	if Global.current_batch == 0:
-		if type == 0:
-			Global.best_match = name
-			
-		else:
-			print ("Wrong type, should be base")
-	
-	if Global.current_batch == 1:
-		if type == 1:
-			Global.best_match = name
-			
-		else:
-			print ("Wrong type, should be quality")
+		#If the distance is greater than the threshold then it doesn't match
+		if best_distance > recognition_threshold:
+			Global.best_match = "No match"
+			print("Drawing too weird")

@@ -1,14 +1,58 @@
 [gd_scene format=3 uid="uid://bs1a5bxslx6dq"]
 
 [ext_resource type="PackedScene" uid="uid://bsctls8rangfd" path="res://Scenes/Gesture_Recognition/gesture_recognition.tscn" id="1_wdoc3"]
-[ext_resource type="Script" uid="uid://rvmg3p2mno3r" path="res://Scripts/Player_Interact/batch.gd" id="2_gaq52"]
+
+[sub_resource type="GDScript" id="GDScript_gaq52"]
+script/source = "extends Label
+
+func _process(_delta):
+	text = str(Global.base)
+"
+
+[sub_resource type="GDScript" id="GDScript_wdoc3"]
+script/source = "extends Label
+
+func _process(_delta):
+	text = str(Global.best_match)
+"
+
+[sub_resource type="GDScript" id="GDScript_urc0m"]
+script/source = "extends Label
+
+func _process(_delta):
+	text = str(Global.qual1)
+"
 
 [node name="Player_Interact" type="Node2D" unique_id=1067726155]
 
 [node name="Gesture_Recognition" parent="." unique_id=1396713249 instance=ExtResource("1_wdoc3")]
-file_name = "Fire"
-min_lines = 3
-type = 1
+file_name = "Projectile"
 
-[node name="Batch" type="Node" parent="." unique_id=2023136124]
-script = ExtResource("2_gaq52")
+[node name="Base_detected" type="Label" parent="." unique_id=1529229015]
+offset_right = 175.0
+offset_bottom = 76.0
+theme_override_font_sizes/font_size = 32
+text = "BASE"
+horizontal_alignment = 1
+vertical_alignment = 1
+script = SubResource("GDScript_gaq52")
+
+[node name="Best_match" type="Label" parent="." unique_id=643898858]
+offset_left = 490.0
+offset_right = 665.0
+offset_bottom = 76.0
+theme_override_font_sizes/font_size = 32
+text = "BEST MATCH"
+horizontal_alignment = 1
+vertical_alignment = 1
+script = SubResource("GDScript_wdoc3")
+
+[node name="Quality_detected" type="Label" parent="." unique_id=559476108]
+offset_top = 80.0
+offset_right = 175.0
+offset_bottom = 156.0
+theme_override_font_sizes/font_size = 32
+text = "QUAL1"
+horizontal_alignment = 1
+vertical_alignment = 1
+script = SubResource("GDScript_urc0m")
