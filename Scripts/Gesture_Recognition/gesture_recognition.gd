@@ -101,6 +101,13 @@ func _input(event):
 			lines_drawn.clear()
 		
 		print("Current batch: ", str(Global.current_batch))
+	
+	#Discard drawing
+	if Input.is_action_just_pressed("Delete"):
+		current_line.clear_points()
+		lines_drawn.clear()
+		total_control_points.clear()
+		queue_redraw()
 
 func start_new_line():
 	current_line = Line2D.new()
