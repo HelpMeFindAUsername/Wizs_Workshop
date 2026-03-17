@@ -89,14 +89,16 @@ func _input(event):
 	#-----------------------------------------------
 	if Input.is_action_just_pressed("Confirm"):
 	#-----------------------------------------------
-	#Goes to next batch only if recognized type matches what's needed
+	#Goes to next batch only if recognized type matches what's needed and reset control points to add new ones
 		if Global.current_batch == 0 and found_type == 0:
 			Global.base = Global.best_match
 			Global.current_batch += 1
+			lines_drawn.clear()
 		
 		if Global.current_batch == 1 and found_type == 1:
 			Global.qual1 = Global.best_match
 			Global.current_batch += 1
+			lines_drawn.clear()
 		
 		print("Current batch: ", str(Global.current_batch))
 
