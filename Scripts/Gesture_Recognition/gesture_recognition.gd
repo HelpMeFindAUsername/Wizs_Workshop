@@ -90,12 +90,12 @@ func _input(event):
 	if Input.is_action_just_pressed("Confirm"):
 	#-----------------------------------------------
 	#Goes to next batch only if recognized type matches what's needed and reset control points to add new ones
-		if Global.current_batch == 0 and found_type == 0:
+		if Global.current_batch == 0 and found_type == 0 and Global.best_match != "No match":
 			Global.base = Global.best_match
 			Global.current_batch += 1
 			lines_drawn.clear()
 		
-		if Global.current_batch == 1 and found_type == 1:
+		if Global.current_batch == 1 and found_type == 1 and Global.best_match != "No match":
 			Global.qual1 = Global.best_match
 			Global.current_batch += 1
 			lines_drawn.clear()
@@ -104,7 +104,8 @@ func _input(event):
 	
 	#Discard drawing
 	if Input.is_action_just_pressed("Delete"):
-		current_line.clear_points()
+		for line in lines.get_children():
+			line.queue_free()
 		lines_drawn.clear()
 		total_control_points.clear()
 		queue_redraw()
