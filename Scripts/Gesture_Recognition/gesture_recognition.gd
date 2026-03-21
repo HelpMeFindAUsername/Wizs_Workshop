@@ -109,6 +109,13 @@ func _input(event):
 		lines_drawn.clear()
 		total_control_points.clear()
 		queue_redraw()
+		
+		Global.best_match = "No match"
+		Global.current_batch = 0
+		Global.base = ""
+		Global.ink = ""
+		Global.qual1 = ""
+		Global.qual2 = ""
 
 func start_new_line():
 	current_line = Line2D.new()
