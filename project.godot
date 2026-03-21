@@ -20,6 +20,10 @@ config/features=PackedStringArray("4.6", "GL Compatibility")
 run/low_processor_mode=true
 config/icon="res://icon.svg"
 
+[audio]
+
+buses/default_bus_layout="uid://b83gb3p533bmu"
+
 [autoload]
 
 Global="*uid://dmom6ynukklqq"

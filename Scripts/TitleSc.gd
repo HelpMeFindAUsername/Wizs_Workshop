@@ -2,6 +2,7 @@ extends CanvasLayer
 
 @onready var start: Button = $Start
 
+
 func _ready():
 	start.pressed.connect(pressStart)
 

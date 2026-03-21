@@ -1,6 +1,7 @@
 [gd_scene format=3 uid="uid://b60pd3lnlxv45"]
 
 [ext_resource type="Script" uid="uid://scs5g5igce1g" path="res://Scripts/PauseMenu.gd" id="1_3t4vh"]
+[ext_resource type="Script" uid="uid://d0js0s38kl684" path="res://Scripts/volumeScript.gd" id="2_fny3v"]
 [ext_resource type="Texture2D" uid="uid://ci3d84pgfrq5a" path="res://Assets/shono_risharshato.png" id="2_hcn70"]
 
 [node name="PauseMenu" type="CanvasLayer" unique_id=718448338]
@@ -43,45 +44,57 @@ text = "BACK TO TITLE SCREEN"
 offset_right = 1152.0
 offset_bottom = 648.0
 
-[node name="HSlider" type="HSlider" parent="Settings" unique_id=597831534]
+[node name="Master" type="HSlider" parent="Settings" unique_id=597831534]
 layout_mode = 0
 offset_left = 21.0
 offset_top = 175.0
 offset_right = 367.0
 offset_bottom = 191.0
+max_value = 1.0
+step = 0.001
 ticks_on_borders = true
+script = ExtResource("2_fny3v")
+busName = "Master"
 
-[node name="Label" type="Label" parent="Settings/HSlider" unique_id=1740370969]
+[node name="Label" type="Label" parent="Settings/Master" unique_id=1740370969]
 layout_mode = 0
 offset_top = -29.0
 offset_right = 121.0
 offset_bottom = -6.0
 text = "Master volume:"
 
-[node name="HSlider2" type="HSlider" parent="Settings" unique_id=988581662]
+[node name="Music" type="HSlider" parent="Settings" unique_id=988581662]
 layout_mode = 0
 offset_left = 21.0
 offset_top = 257.0
 offset_right = 367.0
 offset_bottom = 273.0
+max_value = 1.0
+step = 0.001
 ticks_on_borders = true
+script = ExtResource("2_fny3v")
+busName = "Music"
 
-[node name="Label" type="Label" parent="Settings/HSlider2" unique_id=606537982]
+[node name="Label" type="Label" parent="Settings/Music" unique_id=606537982]
 layout_mode = 0
 offset_top = -29.0
 offset_right = 121.0
 offset_bottom = -6.0
 text = "Music volume:"
 
-[node name="HSlider3" type="HSlider" parent="Settings" unique_id=710102521]
+[node name="SFX" type="HSlider" parent="Settings" unique_id=710102521]
 layout_mode = 0
 offset_left = 21.0
 offset_top = 338.0
 offset_right = 367.0
 offset_bottom = 354.0
+max_value = 1.0
+step = 0.001
 ticks_on_borders = true
+script = ExtResource("2_fny3v")
+busName = "SFX"
 
-[node name="Label" type="Label" parent="Settings/HSlider3" unique_id=493582806]
+[node name="Label" type="Label" parent="Settings/SFX" unique_id=493582806]
 layout_mode = 0
 offset_top = -29.0
 offset_right = 121.0
@@ -100,3 +113,9 @@ text = "GO BACK"
 position = Vector2(801, 324)
 scale = Vector2(1.4096386, 1.5211267)
 texture = ExtResource("2_hcn70")
+
+[node name="music" type="AudioStreamPlayer" parent="." unique_id=1560859865]
+bus = &"Music"
+
+[node name="sfx" type="AudioStreamPlayer" parent="." unique_id=1292008506]
+bus = &"SFX"

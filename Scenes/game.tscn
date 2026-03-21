@@ -14,3 +14,6 @@ scale = Vector2(980.46387, 657.6925)
 texture = ExtResource("3_wrm1d")
 
 [node name="Player_Interact" parent="." unique_id=1067726155 instance=ExtResource("3_3dryh")]
+
+[node name="AudioStreamPlayer" type="AudioStreamPlayer" parent="." unique_id=1929337577]
+bus = &"Music"

@@ -20,7 +20,6 @@ func _ready():
 	
 	process_mode = Node.PROCESS_MODE_ALWAYS
 	
-	
 	#L'if della smisurata infelicità e solitudine
 	var unhappyness = randi_range(0, 1)
 	if unhappyness == 1:
