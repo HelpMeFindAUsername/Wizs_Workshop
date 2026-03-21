@@ -1,0 +1,7 @@
+[gd_resource type="Resource" script_class="ControlPointsData" format=3]
+
+[ext_resource type="Script" path="res://Resources/ControlPointsData.gd" id="1_t3myg"]
+
+[resource]
+script = ExtResource("1_t3myg")
+points = [Vector2(419.2705, 358.59424), Vector2(446.20334, 385.37405), Vector2(446.2659, 327.7341), Vector2(472.7372, 296.43747), Vector2(480.32043, 408.7003), Vector2(496.83893, 262.7819), Vector2(512.3568, 434.63068), Vector2(520.1939, 228.64445), Vector2(543.22156, 194.35626), Vector2(546.4787, 457.93567), Vector2(569, 162), Vector2(574, 149), Vector2(579.31226, 482.96835), Vector2(598.9347, 181.86942), Vector2(608.05817, 510.86774), Vector2(624.15894, 214.15895), Vector2(634.26166, 481.48602), Vector2(653.06274, 243.73985), Vector2(655.0987, 445.84488), Vector2(677.1275, 410.7996), Vector2(680.3177, 274.93448), Vector2(699.7299, 376.22263), Vector2(706.45074, 307.06342), Vector2(721.98596, 341.52103)]

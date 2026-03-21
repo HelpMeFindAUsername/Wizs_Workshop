@@ -1,6 +1,7 @@
 [gd_scene format=3 uid="uid://bs1a5bxslx6dq"]
 
 [ext_resource type="PackedScene" uid="uid://bsctls8rangfd" path="res://Scenes/Gesture_Recognition/gesture_recognition.tscn" id="1_wdoc3"]
+[ext_resource type="PackedScene" uid="uid://cfjv4nq2howt1" path="res://Scenes/Request_System/request_system.tscn" id="2_gaq52"]
 
 [sub_resource type="GDScript" id="GDScript_gaq52"]
 script/source = "extends Label
@@ -26,7 +27,6 @@ func _process(_delta):
 [node name="Player_Interact" type="Node2D" unique_id=1067726155]
 
 [node name="Gesture_Recognition" parent="." unique_id=1396713249 instance=ExtResource("1_wdoc3")]
-file_name = "Projectile"
 
 [node name="Base_detected" type="Label" parent="." unique_id=1529229015]
 offset_right = 175.0
@@ -56,3 +56,5 @@ text = "QUAL1"
 horizontal_alignment = 1
 vertical_alignment = 1
 script = SubResource("GDScript_urc0m")
+
+[node name="Request_System" parent="." unique_id=718281414 instance=ExtResource("2_gaq52")]

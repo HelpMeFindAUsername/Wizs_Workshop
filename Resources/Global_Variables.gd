@@ -2,6 +2,7 @@ extends Node
 
 #GESTURE RECOGNITION STUFF DO NOT TOUCH
 #----------------------------------------------
+var shapes_folder_path := "res://Gestures/"
 var best_match := ""
 
 var base := ""

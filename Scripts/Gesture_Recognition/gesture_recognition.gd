@@ -14,7 +14,6 @@ var total_control_points := []
 
 @export var record := false #Can you record new shapes?
 @export var save_keycode := KEY_SHIFT
-@export var shapes_folder_path := "res://Gestures/"
 @export var file_name := "New_Shape"
 @export var min_lines := 1
 @export var type : GestureType
@@ -160,7 +159,7 @@ func update_control_points():
 		points_to_keep.append(total_control_points[-1])
 		total_control_points = points_to_keep
 	
-	#Time to add new controlpoints if there's not enough my sister is fucking pissing me of she's playing her fuckass battery in my goddamn room fuck my life she could've just fucking set that up in the garage god fucking dammit i'm so full of this shit i'm going to kill myself some day or another i swear to fucking christ
+	#Time to add new controlpoints if there's not enough[insert big monologue about my current working conditions]
 	var extra_needed = control_points_num - total_control_points.size()
 	if extra_needed > 0:
 		var center_point = find_center(total_control_points)
@@ -172,7 +171,7 @@ func update_control_points():
 	#print("Total amount of control points: " + (str(total_control_points.size())))
 
 func segmentation (points: Array, count: int) -> Array:
-	#THIS FUNCTION IS USED TO DIVIDE THE LINES INTO SEGMENTS WHICH GET USED TO CREATE CONTROL POINTS I WANT TO KILL MYSELF
+	#THIS FUNCTION IS USED TO DIVIDE THE LINES INTO SEGMENTS WHICH GET USED TO CREATE CONTROL POINTS I WANT TO [hug] MYSELF
 	if points.size() < 2 or count < 2:
 		return points.duplicate()
 	
@@ -216,7 +215,7 @@ func segmentation (points: Array, count: int) -> Array:
 
 func load_shapes():
 	#Guess what this does
-	var dir = DirAccess.open(shapes_folder_path)
+	var dir = DirAccess.open(Global.shapes_folder_path)
 	if dir:
 		dir.list_dir_begin()
 		
@@ -224,7 +223,7 @@ func load_shapes():
 		var next_file = dir.get_next()
 		while next_file != "":
 			if next_file.ends_with(".tres"):
-				var full_path = shapes_folder_path + "/" + next_file #Get the full path to the file
+				var full_path = Global.shapes_folder_path + "/" + next_file #Get the full path to the file
 				var res = load(full_path) #then load as a resource
 				if res and res is ControlPointsData:
 					var shape_name = next_file.get_basename().to_upper()
@@ -272,19 +271,19 @@ func save_control_points_to_resource(points : Array):
 		resource.set_type(type)
 		
 		#Make sure the resource folder exist
-		if not DirAccess.dir_exists_absolute(shapes_folder_path):
-			var make_result = DirAccess.make_dir_recursive_absolute(shapes_folder_path)
+		if not DirAccess.dir_exists_absolute(Global.shapes_folder_path):
+			var make_result = DirAccess.make_dir_recursive_absolute(Global.shapes_folder_path)
 			if make_result != OK:
 				print ("failed to create directory for saving gestures")
 				return
 		
-		var save_path = shapes_folder_path + "/" + file_name + ".tres"
+		var save_path = Global.shapes_folder_path + "/" + file_name + ".tres"
 		var unique_save_path = save_path
 		var count =1
 		
 		#This makes sure that every time that a new shape is added it doesn't overwrite one with the same name
 		while FileAccess.file_exists(unique_save_path):
-			unique_save_path = shapes_folder_path + "/" + file_name + "_" + str(count) + ".tres"
+			unique_save_path = Global.shapes_folder_path + "/" + file_name + "_" + str(count) + ".tres"
 			count += 1
 		
 		var result = ResourceSaver.save(resource, unique_save_path)
@@ -402,12 +401,14 @@ func recognize_shape(input_points: Array):
 			name = name.replace("8", "")
 			name = name.replace("9", "")
 			
-			#Recognize shape
-			Global.best_match = name
-			print("Best match is:", Global.best_match, ", Distance:", best_distance)
-			found_type = gesture_type
+		
+			if best_distance <= recognition_threshold:
+				#Recognize shape
+				Global.best_match = name
+				found_type = gesture_type
+				#print("Best match is:", Global.best_match, ", Distance:", best_distance)
 		
 		#If the distance is greater than the threshold then it doesn't match
 		if best_distance > recognition_threshold:
 			Global.best_match = "No match"
-			print("Drawing too weird")
+			#print("Drawing too weird")
